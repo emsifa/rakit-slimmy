@@ -22,13 +22,13 @@ class Slimmy extends Slim {
 	{
 		// merge configs to default configs
 		$configs = array_merge(array(
-			'app.path'					=> 'app',
-			'app.module.namespace' 		=> 'App\Modules',
-			'app.module.path' 			=> 'app/modules',
-			'app.view.base_path' 		=> 'views',
-			'app.module.auto_register'	=> true,
+			'path'					=> 'app',
+			'module.namespace' 		=> 'App\Modules',
+			'module.path' 			=> 'app/modules',
+			'view.base_path' 		=> 'views',
+			'module.auto_register'	=> true,
 
-			'app.database.default_connection' => 'default'
+			'database.default_connection' => 'default'
 		), $configs);
 
 		$configs['view'] = new TwigView();
@@ -38,7 +38,7 @@ class Slimmy extends Slim {
 		//$this->setupDatabase($configs);
 		$this->setupTwig();
 
-		$connections = $this->config('app.database.connections');
+		$connections = $this->config('database.connections');
 		if( ! empty($connections) ) {
 			$this->setupDatabaseConnections();
 		}
@@ -49,7 +49,7 @@ class Slimmy extends Slim {
 	 */
 	protected function setupTwig()
 	{
-		$view_path = $this->config('app.path').'/'.$this->config('app.view.base_path');
+		$view_path = $this->config('path').'/'.$this->config('view.base_path');
 		
 		$this->view()->base_view_path = array($view_path);
 		$this->twig = $this->view()->getTwig();
@@ -75,8 +75,8 @@ class Slimmy extends Slim {
 	{
 		// initialize Capsule
 		$this->db = new IlluminateCapsule;
-		$connections = $this->config('app.database.connections');
-		$default_connection = $this->config('app.database.default_connection');
+		$connections = $this->config('database.connections');
+		$default_connection = $this->config('database.default_connection');
 
 		// create conenctions
 		foreach($connections as $name => $settings) {
@@ -125,7 +125,7 @@ class Slimmy extends Slim {
 			throw new \Exception("Module ".$module_name." not found");
 		}
 
-		$module_path = $this->config('app.module.path').'/'.$module_name;
+		$module_path = $this->config('module.path').'/'.$module_name;
 
 		// adding viewpath namespace for this registered module
 		$this->view()->addPath($module_path.'/views', $module_name);
@@ -139,7 +139,7 @@ class Slimmy extends Slim {
 	 */
 	public function hasModule($module_name)
 	{
-		$module_path = $this->config('app.module.path').'/'.$module_name;
+		$module_path = $this->config('module.path').'/'.$module_name;
 
 		return (file_exists($module_path) AND is_dir($module_path));
 	}
@@ -197,7 +197,7 @@ class Slimmy extends Slim {
 	 * @param string callable route access declaration
 	 */
 	protected function getModuleControllerMethodAccess($callable) {
-		$module_namespace = $this->config('app.module.namespace');
+		$module_namespace = $this->config('module.namespace');
 
 		// replacing slash with backslash, so we can (also) access it via slash for namespacing
 		$callable = str_replace('/', "\\", $callable);
@@ -216,7 +216,7 @@ class Slimmy extends Slim {
 			$callable = preg_replace("/\\\+/", "\\", $callable);
 
 			// register this module if module.auto_register is enabled
-			if( TRUE === $this->config('app.module.auto_register') ) {
+			if( TRUE === $this->config('module.auto_register') ) {
 				$this->registerModule($match['module']);
 			}
 		}
