@@ -22,7 +22,7 @@ class Slimmy extends Slim {
 	{
 		// merge configs to default configs
 		$configs = array_merge(array(
-			'path'					=> 'app',
+			'path.app'					=> 'app',
 			'module.namespace' 		=> 'App\Modules',
 			'module.path' 			=> 'app/modules',
 			'view.base_path' 		=> 'views',
@@ -49,7 +49,7 @@ class Slimmy extends Slim {
 	 */
 	protected function setupTwig()
 	{
-		$view_path = $this->config('path').'/'.$this->config('view.base_path');
+		$view_path = $this->config('path.app').'/'.$this->config('view.base_path');
 		
 		$this->view()->base_view_path = array($view_path);
 		$this->twig = $this->view()->getTwig();
