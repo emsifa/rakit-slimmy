@@ -1,0 +1,21 @@
+{
+    "name": "rakit/slimmy",
+    "description": "Extending Slim Framework with twig, illuminate database and integrate them with simple modular system",
+    "authors": [
+        {
+            "name": "Muhammad Syifa",
+            "email": "emsifa@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.10",
+        "slim/slim": "2.4.*",
+        "twig/twig": "1.*",
+        "illuminate/database": "4.1.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Rakit\\Slimmy": "src/"
+        }
+    }
+}
