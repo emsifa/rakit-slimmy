@@ -18,6 +18,8 @@ class Slimmy extends Slim {
 
 	protected $registered_modules = array();
 
+	protected $routes = array();
+
 	public function __construct(array $configs = array())
 	{
 		// merge configs to default configs
@@ -95,20 +97,29 @@ class Slimmy extends Slim {
 	 * with extra method for access module controller
 	 * @param array args route parameters
 	 */
-	protected function mapRoute($args)
+	protected function mapRoute($_args)
 	{
-		$pattern = array_shift($args);
+		$pattern = array_shift($_args);
 		
-		$args = $this->checkAndBuildModuleCallables($args);	
+		$args = $this->checkAndBuildModuleCallables($_args);	
 
 		$callable = array_pop($args);
-		$route = new \Slim\Route($pattern, $callable, $this->settings['routes.case_sensitive']);
+		$defined_callable = array_pop($_args);
+		$route = new Route($pattern, $defined_callable, $callable, $this->settings['routes.case_sensitive']);
 		$this->router->map($route);
+		
+		$this->routes[] = $route;
+
 		if (count($args) > 0) {
 			$route->setMiddleware($args);
 		}
 
 		return $route;
+	}
+
+	public function getRoutes()
+	{
+		return $this->routes;
 	}
 	
 	/**
