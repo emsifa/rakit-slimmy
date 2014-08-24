@@ -146,7 +146,7 @@ class Slimmy extends Slim {
 		$common_files = array('helpers.php', 'hooks.php', 'routes.php');
 
 		foreach($common_files as $_file) {
-			if(file_exists($module_path.'/'.$file)) {
+			if(file_exists($module_path.'/'.$_file)) {
 				include($module_path.'/'.$_file);
 			}
 		}
