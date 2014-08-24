@@ -141,6 +141,16 @@ class Slimmy extends Slim {
 		// adding viewpath namespace for this registered module
 		$this->view()->addPath($module_path.'/views', $module_name);
 
+		$app = $this;
+
+		$common_files = array('helpers.php', 'hooks.php', 'routes.php');
+
+		foreach($common_files as $_file) {
+			if(file_exists($module_path.'/'.$file)) {
+				include($module_path.'/'.$_file);
+			}
+		}
+
 		$this->registered_modules[$module_name] = $module_path;
 	}
 	
@@ -200,7 +210,23 @@ class Slimmy extends Slim {
 			}
 		}
 
-		return $args;
+		return $args;	
+	}
+
+	public function getFlash($key, $default = null)
+	{
+		if($this->hasFlash($key)) {
+			return $_SESSION['slim.flash'][$key];
+		} else {
+			return $default;
+		}
+	}
+
+	public function hasFlash($key)
+	{
+		if(isset($_SESSION['slim.flash']) and is_array($_SESSION['slim.flash'])) {
+			return array_key_exists($key, $_SESSION['slim.flash']);
+		}
 	}
 
 	/**
