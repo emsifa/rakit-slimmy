@@ -141,6 +141,8 @@ class Slimmy extends Slim {
 		// adding viewpath namespace for this registered module
 		$this->view()->addPath($module_path.'/views', $module_name);
 
+		$this->registered_modules[$module_name] = $module_path;
+
 		$app = $this;
 
 		$common_files = array('helpers.php', 'hooks.php', 'routes.php');
@@ -150,8 +152,6 @@ class Slimmy extends Slim {
 				include($module_path.'/'.$_file);
 			}
 		}
-
-		$this->registered_modules[$module_name] = $module_path;
 	}
 	
 	/**
