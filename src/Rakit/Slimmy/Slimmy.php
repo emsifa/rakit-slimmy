@@ -24,10 +24,11 @@ class Slimmy extends Slim {
 	{
 		// merge configs to default configs
 		$configs = array_merge(array(
-			'path.app'					=> 'app',
+			'path.app'					=> 'App',
 			'module.namespace' 		=> 'App\Modules',
-			'module.path' 			=> 'app/modules',
-			'view.base_path' 		=> 'views',
+			'module.path' 			=> 'App/Modules',
+			'module.view_dir'		=> 'Views',
+			'view.base_path' 		=> 'Views',
 			'module.auto_register'	=> true,
 
 			'database.default_connection' => 'default'
@@ -139,7 +140,7 @@ class Slimmy extends Slim {
 		$module_path = $this->config('module.path').'/'.$module_name;
 
 		// adding viewpath namespace for this registered module
-		$this->view()->addPath($module_path.'/views', $module_name);
+		$this->view()->addPath($module_path.'/'.$this->config('module.view_dir'), $module_name);
 
 		$this->registered_modules[$module_name] = $module_path;
 
