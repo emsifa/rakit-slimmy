@@ -10,6 +10,7 @@
  */
 
 use Illuminate\Database\Capsule\Manager as IlluminateCapsule;
+
 use Slim\Slim;
 
 class Slimmy extends Slim {
@@ -17,19 +18,23 @@ class Slimmy extends Slim {
 	public $twig;
 
 	protected $registered_modules = array();
-
 	protected $routes = array();
+	public $migrator = null;
 
 	public function __construct(array $configs = array())
 	{
 		// merge configs to default configs
 		$configs = array_merge(array(
-			'path.app'					=> 'App',
-			'module.namespace' 		=> 'App\Modules',
-			'module.path' 			=> 'App/Modules',
-			'module.view_dir'		=> 'Views',
-			'view.base_path' 		=> 'Views',
-			'module.auto_register'	=> true,
+			'path.app' => 'App',
+			'module.namespace' => 'App\Modules',
+			'module.path' => 'App/Modules',
+			
+			'view.directory' => 'Views',
+			'module.auto_register' => true,
+
+			'migration.table' => 'migrations',
+			'migration.directory' => 'Migrations',
+			'migration.enabled' => true,
 
 			'database.default_connection' => 'default'
 		), $configs);
@@ -42,8 +47,13 @@ class Slimmy extends Slim {
 		$this->setupTwig();
 
 		$connections = $this->config('database.connections');
+		$this->migrator = "foobar";
 		if( ! empty($connections) ) {
 			$this->setupDatabaseConnections();
+
+			if(TRUE === $this->config('migration.enabled')) {
+				$this->setupMigrator();
+			}
 		}
 	}
 
@@ -52,7 +62,7 @@ class Slimmy extends Slim {
 	 */
 	protected function setupTwig()
 	{
-		$view_path = $this->config('path.app').'/'.$this->config('view.base_path');
+		$view_path = $this->config('path.app').'/'.$this->config('view.directory');
 		
 		$this->view()->base_view_path = array($view_path);
 		$this->twig = $this->view()->getTwig();
@@ -92,6 +102,18 @@ class Slimmy extends Slim {
 
 		$this->setDefaultConnection($default_connection);
 	}
+
+	/**
+	 * Setup Migrator if it's enabled
+	 */
+	protected function setupMigrator()
+	{
+		$path = $this->config('path.app').'/'.$this->config('migration.directory');
+
+		$this->migrator = new Migrator($this);
+		$this->migrator->setPath('base', $path);
+	}
+
 	
 	/**
 	 * extending basic mapRoute
@@ -140,7 +162,8 @@ class Slimmy extends Slim {
 		$module_path = $this->config('module.path').'/'.$module_name;
 
 		// adding viewpath namespace for this registered module
-		$this->view()->addPath($module_path.'/'.$this->config('module.view_dir'), $module_name);
+		$this->view()->addPath($module_path.'/'.$this->config('view.directory'), $module_name);
+		$this->migrator->addPath($module_name, $module_path.'/'.$this->config('migration.directory'));
 
 		$this->registered_modules[$module_name] = $module_path;
 
